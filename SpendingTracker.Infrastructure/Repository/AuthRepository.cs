@@ -1,6 +1,6 @@
 ﻿using SpendingTracker.Application.Common.Interface;
 using SpendingTracker.Domain.Entities;
-using SpendingTracker.Infrastructure.Data;;
+using SpendingTracker.Infrastructure.Data;
 
 
 namespace SpendingTracker.Infrastructure.Repository

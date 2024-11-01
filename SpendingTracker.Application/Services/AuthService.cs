@@ -12,6 +12,13 @@ namespace SpendingTracker.Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly PasswordHasher<UserDto> _passwordHasher;
+
+        public AuthService(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+            _passwordHasher = new PasswordHasher<UserDto>();
+        }
+
         public async Task<LoginResponseDto> Login(LoginRequestDto loginRequest)
         {
             Users user = await _unitOfWork.auth.Get(u => u.UserName.ToLower() == loginRequest.UserName.ToLower());
@@ -72,7 +79,7 @@ namespace SpendingTracker.Application.Services
             }
 
             var hashPassword = _passwordHasher.HashPassword(applicationUser, request.Password);
-            Users newUser = Users.Create(request.FullName, request.Email, request.UserName, hashPassword);
+            Users newUser = Users.Create(request.FullName, request.UserName,request.Email, hashPassword);
 
             await _unitOfWork.auth.Add(newUser);
             await _unitOfWork.Save();
