@@ -24,7 +24,7 @@ namespace SpendingTracker.Domain.Entities
             Password = password;
         }
 
-        public static Users? Create(string fullName, string userName, string email, string password)
+        public static Users Create(string fullName, string userName, string email, string password)
         {
             Guid id = Guid.NewGuid();
             
