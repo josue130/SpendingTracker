@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SpendingTracker.Domain.entities;
+using SpendingTracker.Domain.Entities;
 
 
 namespace SpendingTracker.Infrastructure.Data
