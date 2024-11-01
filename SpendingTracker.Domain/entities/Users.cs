@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpendingTracker.Domain.ValueObjects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,10 +24,11 @@ namespace SpendingTracker.Domain.Entities
             Password = password;
         }
 
-        public static Users Create(string fullName, string userName, string email, string password)
+        public static Users? Create(string fullName, string userName, string email, string password)
         {
             Guid id = Guid.NewGuid();
-            return new Users(id, fullName, userName, email,password);
+            
+            return new Users(id, fullName, userName, email, password);
         }
 
         private Users()
