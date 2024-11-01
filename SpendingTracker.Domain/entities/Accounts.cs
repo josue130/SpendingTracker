@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpendingTracker.Domain.entities
+namespace SpendingTracker.Domain.Entities
 {
     public class Accounts
     {
