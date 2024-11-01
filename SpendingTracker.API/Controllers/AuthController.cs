@@ -18,14 +18,14 @@ namespace SpendingTracker.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
         {
-            var loginResponse = await _authService.Login(model);
-            return Ok(loginResponse);
+            var response = await _authService.Login(model);
+            return Ok(response);
         }
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto model)
         {
-            await _authService.Register(model);
-            return Ok();
+            var response = await _authService.Register(model);
+            return Ok(response);
         }
     }
 }

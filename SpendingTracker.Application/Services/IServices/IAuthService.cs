@@ -1,4 +1,5 @@
 ﻿using SpendingTracker.Application.Common.Dto;
+using SpendingTracker.Application.Common.Result;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace SpendingTracker.Application.Services.IServices
 {
     public interface IAuthService
     {
-        Task<LoginResponseDto> Login(LoginRequestDto loginRequest);
-        Task Register(RegisterRequestDto request);
+        Task<Result> Login(LoginRequestDto loginRequest);
+        Task<Result> Register(RegisterRequestDto request);
     }
 }

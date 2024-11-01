@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SpendingTracker.Application.Common.Dto;
 using SpendingTracker.Application.Common.Interface;
+using SpendingTracker.Application.Common.Result;
+using SpendingTracker.Application.Errors;
 using SpendingTracker.Application.Services.IServices;
 using SpendingTracker.Domain.Entities;
 using SpendingTracker.Domain.ValueObjects;
@@ -19,14 +21,14 @@ namespace SpendingTracker.Application.Services
             _passwordHasher = new PasswordHasher<UserDto>();
         }
 
-        public async Task<LoginResponseDto> Login(LoginRequestDto loginRequest)
+        public async Task<Result> Login(LoginRequestDto loginRequest)
         {
             Users user = await _unitOfWork.auth.Get(u => u.UserName.ToLower() == loginRequest.UserName.ToLower());
 
 
             if (user == null)
             {
-               // error
+                return Result.Failure(AuthErrors.UserNameNotExist);
             }
 
 
@@ -41,29 +43,29 @@ namespace SpendingTracker.Application.Services
 
             if (result != PasswordVerificationResult.Success)
             {
-                // error
+                return Result.Failure(AuthErrors.IncorrectPassword);
             }
 
-            
 
-            return new LoginResponseDto
+            return Result.Success(new LoginResponseDto
             {
                 User = applicationUser,
                 Token = ""
-            };
+            });
+       
         }
 
-        public async Task Register(RegisterRequestDto request)
+        public async Task<Result> Register(RegisterRequestDto request)
         {
             if (string.IsNullOrWhiteSpace(request.FullName) || string.IsNullOrWhiteSpace(request.UserName)
                 || string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
             {
-                // error
+                return Result.Failure(AuthErrors.InvalidInputs);
             }
 
             if (Email.Create(request.Email) is null)
             {
-                // error
+                return Result.Failure(AuthErrors.InvalidEmailFormat);
             }
 
             var applicationUser = new UserDto()
@@ -75,7 +77,7 @@ namespace SpendingTracker.Application.Services
             var user = await _unitOfWork.auth.Get(u => u.UserName.ToLower() == request.UserName.ToLower());
             if (user != null)
             {
-               // error
+                return Result.Failure(AuthErrors.UserNameAlreadyExits);
             }
 
             var hashPassword = _passwordHasher.HashPassword(applicationUser, request.Password);
@@ -83,6 +85,9 @@ namespace SpendingTracker.Application.Services
 
             await _unitOfWork.auth.Add(newUser);
             await _unitOfWork.Save();
+
+
+            return Result.Success("User registered succesfully");
 
         }
     }
