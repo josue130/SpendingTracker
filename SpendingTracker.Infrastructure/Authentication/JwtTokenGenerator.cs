@@ -24,7 +24,7 @@ namespace SpendingTracker.Infrastructure.Authentication
             {
                 new Claim(JwtRegisteredClaimNames.Email,applicationUser.Email),
                 new Claim(JwtRegisteredClaimNames.Name,applicationUser.UserName),
-                new Claim(JwtRegisteredClaimNames.Sub, applicationUser.Id.ToString())
+                new Claim(ClaimTypes.NameIdentifier, applicationUser.Id.ToString())
             };
 
             var tokenDescriptor = new SecurityTokenDescriptor
