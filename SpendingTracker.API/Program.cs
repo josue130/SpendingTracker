@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SpendingTracker.Application.Common.Interface;
 using SpendingTracker.Application.Services;
 using SpendingTracker.Application.Services.IServices;
+using SpendingTracker.Infrastructure.Authentication;
 using SpendingTracker.Infrastructure.Data;
 using System;
 using Workout.Infrastructure.Repository;
@@ -14,7 +15,9 @@ builder.Services.AddDbContext<AppDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddControllers();
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("ApiSettings:JwtOptions"));
 builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
+builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
