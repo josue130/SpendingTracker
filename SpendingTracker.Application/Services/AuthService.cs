@@ -14,11 +14,13 @@ namespace SpendingTracker.Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly PasswordHasher<UserDto> _passwordHasher;
+        private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
-        public AuthService(IUnitOfWork unitOfWork)
+        public AuthService(IUnitOfWork unitOfWork, IJwtTokenGenerator jwtTokenGenerator)
         {
             _unitOfWork = unitOfWork;
             _passwordHasher = new PasswordHasher<UserDto>();
+            _jwtTokenGenerator = jwtTokenGenerator;
         }
 
         public async Task<Result> Login(LoginRequestDto loginRequest)
@@ -50,7 +52,7 @@ namespace SpendingTracker.Application.Services
             return Result.Success(new LoginResponseDto
             {
                 User = applicationUser,
-                Token = ""
+                Token = _jwtTokenGenerator.GenerateToken(user)
             });
        
         }
