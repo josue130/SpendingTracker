@@ -9,5 +9,6 @@ namespace SpendingTracker.Application.Common.Interface
 {
     public interface IAccountRepository : IRepository<Accounts>
     {
+        void Update(Accounts account);
     }
 }
