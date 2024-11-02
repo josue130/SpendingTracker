@@ -19,12 +19,20 @@ namespace SpendingTracker.API.Controllers
         public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
         {
             var response = await _authService.Login(model);
+            if (response.IsFailure)
+            {
+                return BadRequest(response.Error);
+            }
             return Ok(response);
         }
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto model)
         {
             var response = await _authService.Register(model);
+            if (response.IsFailure)
+            {
+                return BadRequest(response.Error);
+            }
             return Ok(response);
         }
     }
