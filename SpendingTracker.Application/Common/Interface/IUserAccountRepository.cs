@@ -1,4 +1,5 @@
-﻿using SpendingTracker.Domain.Entities;
+﻿using SpendingTracker.Application.Common.Dto;
+using SpendingTracker.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,6 @@ namespace SpendingTracker.Application.Common.Interface
 {
     public interface IUserAccountRepository : IRepository<UserAccounts>
     {
+        Task<IEnumerable<AccountsDto>> GetUserAccounts(Guid userId);
     }
 }
