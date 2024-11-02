@@ -15,5 +15,8 @@ namespace SpendingTracker.Application.Errors
         public static readonly Error InvalidAmount = new Error(
             "Validation", "Amount must be greater than 0");
 
+        public static readonly Error AccountNotFound = new Error(
+            "AccountNotFound", "The account does not exist");
+
     }
 }
