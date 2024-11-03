@@ -11,9 +11,13 @@ namespace SpendingTracker.Domain.Entities
     {
         public Guid Id { get; set; }
         public double Amount { get; set; }
+        public string Description { get; set; } = string.Empty;
+        public DateTime Date { get; set; }
+        public Guid AccountId { get; set; }
+        [ForeignKey("AccountId")]
+        public virtual Accounts Accounts { get; set; } = null!;
         public Guid CategoryId { get; set; }
         [ForeignKey("CategoryId")]
         public virtual CategoryIncome CategoryIncome { get; set; } = null!;
-        public DateTime Date { get; set; }
     }
 }
