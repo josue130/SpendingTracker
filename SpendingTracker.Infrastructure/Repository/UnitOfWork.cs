@@ -12,7 +12,6 @@ namespace Workout.Infrastructure.Repository
         public IAuthRepository auth { get; init; }
         public IAccountRepository accounts { get; init; }
         public IUserAccountRepository userAccounts { get; init; }
-        public IUserIncomeRepository userIncome { get; init; }
         public ICategoryIncomeRepository categoryIncome { get; init; }
         public IIncomeRepository income { get; init; }
 
@@ -24,7 +23,7 @@ namespace Workout.Infrastructure.Repository
             userAccounts = new UserAccountRepository(db);
             income = new IncomeRepository(db);
             categoryIncome = new CategoryIncomeRepository(db);
-            userIncome = new UserIncomeRepository(db);
+
 
         }
 

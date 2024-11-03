@@ -32,7 +32,7 @@ namespace SpendingTracker.Domain.Entities
                 Id = Guid.NewGuid(),
                 CategoryName = categoryName,
                 Color = color,
-                Icon = icon
+                Icon = icon,
                 UserId = userId
             };
         }
