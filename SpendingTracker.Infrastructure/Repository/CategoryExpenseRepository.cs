@@ -1,4 +1,5 @@
-﻿using SpendingTracker.Application.Common.Interface;
+﻿using Microsoft.EntityFrameworkCore;
+using SpendingTracker.Application.Common.Interface;
 using SpendingTracker.Domain.Entities;
 using SpendingTracker.Infrastructure.Data;
 using System;
@@ -14,6 +15,11 @@ namespace SpendingTracker.Infrastructure.Repository
         private readonly AppDbContext _db;
         public CategoryExpenseRepository(AppDbContext db) : base(db)
         {
+            _db = db;
+        }
+        public async Task<IEnumerable<CategoryExpense>> GetCategories(Guid userId)
+        {
+            return await _db.categoryExpense.Where(ce => ce.UserId == userId).ToListAsync();
         }
 
         public void Update(CategoryExpense categoryExpense)
