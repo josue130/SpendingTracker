@@ -9,6 +9,8 @@ namespace SpendingTracker.Application.Common.Interface
         IUserAccountRepository userAccounts { get; }
         ICategoryIncomeRepository categoryIncome { get; }
         IIncomeRepository income { get; }
+        IExpenseRepository expense { get; }
+        ICategoryExpenseRepository categoryExpense { get; }
         Task Save();
     }
 }
