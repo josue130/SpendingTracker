@@ -15,7 +15,7 @@ namespace Workout.Infrastructure.Repository
         public ICategoryIncomeRepository categoryIncome { get; init; }
         public IIncomeRepository income { get; init; }
         public IExpenseRepository expense { get; init; }
-        public ICategoryExpenseRepository categoryExpense { get; init; };
+        public ICategoryExpenseRepository categoryExpense { get; init; }
 
         public UnitOfWork(AppDbContext db)
         {
