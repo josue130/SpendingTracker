@@ -14,8 +14,10 @@ namespace Workout.Infrastructure.Repository
         public IUserAccountRepository userAccounts { get; init; }
         public ICategoryIncomeRepository categoryIncome { get; init; }
         public IIncomeRepository income { get; init; }
+        public IExpenseRepository expense { get; init; }
+        public ICategoryExpenseRepository categoryExpense { get; init; };
 
-    public UnitOfWork(AppDbContext db)
+        public UnitOfWork(AppDbContext db)
         {
             _db = db;
             auth = new AuthRepository(db);
@@ -23,8 +25,8 @@ namespace Workout.Infrastructure.Repository
             userAccounts = new UserAccountRepository(db);
             income = new IncomeRepository(db);
             categoryIncome = new CategoryIncomeRepository(db);
-
-
+            expense = new ExpenseRepository(db);
+            categoryExpense = new CategoryExpenseRepository(db);
         }
 
         public async Task Save()
