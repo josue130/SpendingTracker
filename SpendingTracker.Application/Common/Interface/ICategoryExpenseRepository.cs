@@ -9,7 +9,7 @@ namespace SpendingTracker.Application.Common.Interface
 {
     public interface ICategoryExpenseRepository : IRepository<CategoryExpense>
     {
-        Task<IEnumerable<CategoryExpense>> GetCategories(Guid userId)
+        Task<IEnumerable<CategoryExpense>> GetCategories(Guid userId);
         void Update(CategoryExpense categoryExpense);
     }
 }
