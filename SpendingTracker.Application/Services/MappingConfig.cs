@@ -11,7 +11,7 @@ namespace SpendingTracker.Application.Services
             var mappingConfig = new MapperConfiguration(config =>
             {
                 config.CreateMap<Accounts, AccountsDto>().ReverseMap();
-
+                config.CreateMap<CategoryIncome, CategoryIncomeDto>().ReverseMap();
 
             });
             return mappingConfig;
