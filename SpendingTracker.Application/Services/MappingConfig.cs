@@ -12,6 +12,7 @@ namespace SpendingTracker.Application.Services
             {
                 config.CreateMap<Accounts, AccountsDto>().ReverseMap();
                 config.CreateMap<CategoryIncome, CategoryIncomeDto>().ReverseMap();
+                config.CreateMap<CategoryExpense, CategoryExpenseDto>().ReverseMap();
 
             });
             return mappingConfig;
