@@ -23,7 +23,7 @@ namespace SpendingTracker.Infrastructure.Repository
         public async Task<T> Get(Expression<Func<T, bool>> filter)
         {
             var entity = await dbSet
-                .AsNoTrackingWithIdentityResolution()
+                .AsNoTracking()
                 .FirstOrDefaultAsync(filter);
             return entity;
         }
@@ -31,7 +31,7 @@ namespace SpendingTracker.Infrastructure.Repository
         public async Task<IEnumerable<T>> GetAll()
         {
             return await dbSet
-                .AsNoTrackingWithIdentityResolution()
+                .AsNoTracking()
                 .ToListAsync();
         }
 
