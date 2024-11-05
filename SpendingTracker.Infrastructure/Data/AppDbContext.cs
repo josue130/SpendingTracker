@@ -16,6 +16,7 @@ namespace SpendingTracker.Infrastructure.Data
         public DbSet<Income> income { get; set; }
         public DbSet<CategoryExpense> categoryExpense { get; set; }
         public DbSet<Expense> expense { get; set; }
+        public DbSet<MonthlyBalances> monthlyBalances { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
