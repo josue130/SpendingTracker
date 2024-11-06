@@ -10,6 +10,6 @@ namespace SpendingTracker.Application.Errors
     public class CategoryExpenseError
     {
         public static readonly Error CategoryNotFound = new Error(
-            "AccountNotFound", "The category does not exist");;
+            "AccountNotFound", "The category does not exist");
     }
 }
