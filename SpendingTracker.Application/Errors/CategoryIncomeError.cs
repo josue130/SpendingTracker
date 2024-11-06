@@ -11,7 +11,5 @@ namespace SpendingTracker.Application.Errors
     {
         public static readonly Error CategorytNotFound = new Error(
             "AccountNotFound", "The category does not exist");
-        public static readonly Error InvalidInputs = new Error(
-            "Validation", "Inputs cannot be empty");
     }
 }

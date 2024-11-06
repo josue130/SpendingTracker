@@ -24,7 +24,7 @@ namespace SpendingTracker.Application.Services
             if (string.IsNullOrWhiteSpace(model.Color) || string.IsNullOrWhiteSpace(model.CategoryName)
                 || string.IsNullOrWhiteSpace(model.Icon))
             {
-                return Result.Failure(CategoryIncomeError.InvalidInputs);
+                return Result.Failure(GlobalError.InvalidInputs);
             }
             Guid userId = CheckUserId(user);
             CategoryExpense categoryExpense = CategoryExpense.Create(model.CategoryName, model.Color, model.Icon, userId);
@@ -60,7 +60,7 @@ namespace SpendingTracker.Application.Services
             if (string.IsNullOrWhiteSpace(model.Color) || string.IsNullOrWhiteSpace(model.CategoryName)
                 || string.IsNullOrWhiteSpace(model.Icon))
             {
-                return Result.Failure(CategoryIncomeError.InvalidInputs);
+                return Result.Failure(GlobalError.InvalidInputs);
             }
             _unitOfWork.categoryExpense.Update(_mapper.Map<CategoryExpense>(model));
             await _unitOfWork.Save();

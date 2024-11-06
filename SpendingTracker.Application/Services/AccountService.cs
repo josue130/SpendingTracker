@@ -25,7 +25,7 @@ namespace SpendingTracker.Application.Services
             Guid userId = CheckUserId(user);
             if (string.IsNullOrWhiteSpace(model.Description) || string.IsNullOrWhiteSpace(model.AccountName))
             {
-                return Result.Failure(AccountsError.InvalidInputs);
+                return Result.Failure(GlobalError.InvalidInputs);
             }
             if (model.Amount <= 0)
             {
@@ -74,7 +74,7 @@ namespace SpendingTracker.Application.Services
 
             if (string.IsNullOrWhiteSpace(model.Description) || string.IsNullOrWhiteSpace(model.AccountName))
             {
-                return Result.Failure(AccountsError.InvalidInputs);
+                return Result.Failure(GlobalError.InvalidInputs);
             }
 
             _unitOfWork.accounts.Update(_mapper.Map<Accounts>(model));

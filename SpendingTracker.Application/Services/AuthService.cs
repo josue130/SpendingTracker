@@ -62,7 +62,7 @@ namespace SpendingTracker.Application.Services
             if (string.IsNullOrWhiteSpace(request.FullName) || string.IsNullOrWhiteSpace(request.UserName)
                 || string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
             {
-                return Result.Failure(AuthErrors.InvalidInputs);
+                return Result.Failure(GlobalError.InvalidInputs);
             }
 
             if (Email.Create(request.Email) is null)
