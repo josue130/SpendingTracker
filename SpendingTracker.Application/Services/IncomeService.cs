@@ -30,11 +30,11 @@ namespace SpendingTracker.Application.Services
             if (model.CategoryId == Guid.Empty
                     || model.AccountId == Guid.Empty || model.Date == default)
             {
-                return Result.Failure(CategoryIncomeError.InvalidInputs);
+                return Result.Failure(GlobalError.InvalidInputs);
             }
             if (model.Amount < 0)
             {
-                return Result.Failure(CategoryIncomeError.InvalidInputs);
+                return Result.Failure(GlobalError.InvalidInputs);
             }
             Income income = Income.Create(model.Description, model.Amount, model.Date, model.AccountId, model.CategoryId);
             await _unitOfWork.income.Add(income);
@@ -49,7 +49,7 @@ namespace SpendingTracker.Application.Services
             bool result = await _unitOfWork.income.CheckUserAccess(Id, userId);
             if (!result)
             {
-                return Result.Failure(AccountsError.AccountNotFound);
+                return Result.Failure(IncomeError.IncomeNotFound);
             }
 
             Income income = await _unitOfWork.income.Get(i => i.Id == Id);
@@ -62,7 +62,7 @@ namespace SpendingTracker.Application.Services
         public async Task<Result> GetIncome(Guid accountId, int month, int year)
         {
             IEnumerable<Income> response = await _unitOfWork.income.GetIncomesByAccountId(accountId,month,year);
-            return Result.Success(_mapper.Map<IncomeDto>(response));
+            return Result.Success(_mapper.Map<IEnumerable<IncomeDto>>(response));
         }
 
         public async Task<Result> UpdateIncome(IncomeDto model, ClaimsPrincipal user)
@@ -71,17 +71,17 @@ namespace SpendingTracker.Application.Services
             bool result = await _unitOfWork.income.CheckUserAccess(model.Id, userId);
             if (!result)
             {
-                return Result.Failure(AccountsError.AccountNotFound);
+                return Result.Failure(IncomeError.IncomeNotFound);
             }
 
             if (model.CategoryId == Guid.Empty
                     || model.AccountId == Guid.Empty || model.Date == default)
             {
-                return Result.Failure(CategoryIncomeError.InvalidInputs);
+                return Result.Failure(GlobalError.InvalidInputs);
             }
             if (model.Amount < 0)
             {
-                return Result.Failure(CategoryIncomeError.InvalidInputs);
+                return Result.Failure(GlobalError.InvalidInputs);
             }
             _unitOfWork.income.Update(_mapper.Map<Income>(model));
             await _unitOfWork.Save();
