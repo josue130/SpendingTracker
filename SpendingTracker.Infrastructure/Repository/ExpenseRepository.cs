@@ -1,4 +1,5 @@
-﻿using SpendingTracker.Application.Common.Interface;
+﻿using Microsoft.EntityFrameworkCore;
+using SpendingTracker.Application.Common.Interface;
 using SpendingTracker.Domain.Entities;
 using SpendingTracker.Infrastructure.Data;
 using System;
@@ -16,6 +17,31 @@ namespace SpendingTracker.Infrastructure.Repository
         public ExpenseRepository(AppDbContext db) : base(db)
         {
             _db = db;
+        }
+
+        public async Task<bool> CheckUserAccess(Guid expenseId, Guid userId)
+        {
+            var expense = await _db.expense
+                .AsNoTracking()
+                .Where(i => i.Id == expenseId)
+                .Join(_db.userAccounts,
+                    i => i.AccountId,
+                    ua => ua.AccountId,
+                    (i, ua) => new { Income = i, UserAccount = ua })
+                .FirstOrDefaultAsync(x => x.UserAccount.UserId == userId);
+            if (expense == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<IEnumerable<Expense>> GetExpenseByAccountId(Guid accountId, int month, int year)
+        {
+            return await _db.expense.Where(i => i.AccountId == accountId &&
+                i.Date.Year == year &&
+                i.Date.Month == month)
+                .ToListAsync();
         }
 
         public void Update(Expense expense)
