@@ -19,5 +19,32 @@ namespace SpendingTracker.Domain.Entities
         public Guid CategoryId { get; set; }
         [ForeignKey("CategoryId")]
         public virtual CategoryExpense CategoryExpense { get; set; } = null!;
+
+        public Expense(Guid id, string description, double amount, DateTime date, Guid accountId, Guid categoryId)
+        {
+            Id = id;
+            Description = description;
+            Amount = amount;
+            Date = date;
+            AccountId = accountId;
+            CategoryId = categoryId;
+        }
+
+        public static Expense Create(string description, double amount, DateTime date, Guid accountId, Guid categoryId)
+        {
+            return new Expense
+            {
+                Id = Guid.NewGuid(),
+                Description = description,
+                Amount = amount,
+                Date = date,
+                AccountId = accountId,
+                CategoryId = categoryId
+            };
+        }
+        private Expense()
+        {
+
+        }
     }
 }
