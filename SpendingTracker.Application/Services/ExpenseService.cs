@@ -5,6 +5,7 @@ using SpendingTracker.Application.Common.Result;
 using SpendingTracker.Application.Errors;
 using SpendingTracker.Application.Services.IServices;
 using SpendingTracker.Domain.Entities;
+using System.Reflection;
 using System.Security.Claims;
 
 
@@ -33,6 +34,12 @@ namespace SpendingTracker.Application.Services
             }
             Expense expense = Expense.Create(model.Description, model.Amount, model.Date, model.AccountId, model.CategoryId);
             await _unitOfWork.expense.Add(expense);
+
+            //Update account amount
+            Accounts accounts = await _unitOfWork.accounts.Get(a => a.Id == model.AccountId);
+            accounts.Amount -= model.Amount;
+            _unitOfWork.accounts.Update(accounts);
+
             await _unitOfWork.Save();
 
             return Result.Success();
@@ -49,6 +56,13 @@ namespace SpendingTracker.Application.Services
 
             Expense expense = await _unitOfWork.expense.Get(i => i.Id == Id);
             _unitOfWork.expense.Remove(expense);
+
+            //Update account amount
+            Accounts accounts = await _unitOfWork.accounts.Get(a => a.Id == expense.AccountId);
+            accounts.Amount += expense.Amount;
+            _unitOfWork.accounts.Update(accounts);
+
+
             await _unitOfWork.Save();
             return Result.Success();
         }
@@ -78,6 +92,14 @@ namespace SpendingTracker.Application.Services
                 return Result.Failure(GlobalError.InvalidInputs);
             }
             _unitOfWork.expense.Update(_mapper.Map<Expense>(model));
+
+            //Update account amount
+            Expense expense = await _unitOfWork.expense.Get(ex => ex.Id == model.Id);
+            double diff = expense.Amount - model.Amount;
+            Accounts accounts = await _unitOfWork.accounts.Get(a => a.Id == model.AccountId);
+            accounts.Amount += diff;
+            _unitOfWork.accounts.Update(accounts);
+
             await _unitOfWork.Save();
             return Result.Success();
         }
