@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using SpendingTracker.Application.Services;
@@ -8,6 +9,7 @@ namespace SpendingTracker.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MonthlyBalancesController : ControllerBase
     {
         private readonly IMonthlyBalancesService _monthlyBalancesService;

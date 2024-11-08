@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SpendingTracker.Application.Common.Dto;
 using SpendingTracker.Application.Services.IServices;
@@ -7,6 +8,7 @@ namespace SpendingTracker.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CategoryIncomeController : ControllerBase
     {
         private readonly ICategoryIncomeService _categoryIncomeService;
