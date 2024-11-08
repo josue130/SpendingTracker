@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using SpendingTracker.API.Extensions;
+using SpendingTracker.API.Middleware;
 using SpendingTracker.Application.Common.Interface;
 using SpendingTracker.Application.Services;
 using SpendingTracker.Application.Services.IServices;
@@ -68,7 +69,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseMiddleware<CustomExceptionMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
