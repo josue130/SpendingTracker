@@ -16,6 +16,30 @@ namespace SpendingTracker.Domain.Entities
         public Guid AccountId { get; set; }
         [ForeignKey("AccountId")]
         public virtual Accounts Accounts { get; set; } = null!;
+        public MonthlyBalances(Guid id, int year, int month, double balance, Guid accountId)
+        {
+            Id = id;
+            Year = year;
+            Month = month;
+            Balance = balance;
+            AccountId = accountId;
+            
+        }
+        public static MonthlyBalances Create(int year, int month, double balance, Guid accountId)
+        {
+            return new MonthlyBalances
+            {
+                Id = Guid.NewGuid(),
+                Year = year,
+                Month = month,
+                Balance = balance,
+                AccountId = accountId
+            };
+        }
+        private MonthlyBalances()
+        {
+            
+        }
     }
     
 }
