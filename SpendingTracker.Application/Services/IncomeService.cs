@@ -19,12 +19,13 @@ namespace SpendingTracker.Application.Services
     public class IncomeService : IIncomeService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMonthlyBalancesService _monthlyBalancesService;
         private readonly IMapper _mapper;
-        public IncomeService(IUnitOfWork unitOfWork, IMapper mapper)
+        public IncomeService(IUnitOfWork unitOfWork, IMapper mapper, IMonthlyBalancesService monthlyBalancesService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
-
+            _monthlyBalancesService = monthlyBalancesService;
         }
         public async Task<Result> AddIncome(IncomeDto model, ClaimsPrincipal user)
         {
@@ -45,6 +46,8 @@ namespace SpendingTracker.Application.Services
             Accounts accounts = await _unitOfWork.accounts.Get(a => a.Id == model.AccountId);
             accounts.Amount += model.Amount;
             _unitOfWork.accounts.Update(accounts);
+
+            await _monthlyBalancesService.AddMonthlyBalance(model.AccountId, model.Amount, model.Date);
 
             await _unitOfWork.Save();
 
@@ -69,6 +72,7 @@ namespace SpendingTracker.Application.Services
             accounts.Amount -= income.Amount;
             _unitOfWork.accounts.Update(accounts);
 
+            await _monthlyBalancesService.AddMonthlyBalance(income.AccountId, income.Amount * -1, income.Date);
 
             await _unitOfWork.Save();
             return Result.Success();
@@ -108,6 +112,9 @@ namespace SpendingTracker.Application.Services
             Accounts account = await _unitOfWork.accounts.Get(a => a.Id == model.AccountId);
             account.Amount += diff;
             _unitOfWork.accounts.Update(account);
+
+
+            await _monthlyBalancesService.AddMonthlyBalance(model.AccountId, diff, model.Date);
 
             await _unitOfWork.Save();
             return Result.Success();
