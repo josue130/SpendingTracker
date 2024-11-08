@@ -17,6 +17,8 @@ namespace Workout.Infrastructure.Repository
         public IExpenseRepository expense { get; init; }
         public ICategoryExpenseRepository categoryExpense { get; init; }
 
+        public IMonthlyBalancesRepository monthlyBalances { get; init; }
+
         public UnitOfWork(AppDbContext db)
         {
             _db = db;
@@ -27,6 +29,7 @@ namespace Workout.Infrastructure.Repository
             categoryIncome = new CategoryIncomeRepository(db);
             expense = new ExpenseRepository(db);
             categoryExpense = new CategoryExpenseRepository(db);
+            monthlyBalances = new MonthlyBalancesRepository(db);
         }
 
         public async Task Save()
