@@ -61,11 +61,13 @@ namespace SpendingTracker.Application.Services
 
         public async Task<Result> UpdateCategoryIncome(CategoryIncomeDto model, ClaimsPrincipal user)
         {
+            Guid userId = CheckUserId(user);
             if (string.IsNullOrWhiteSpace(model.Color) || string.IsNullOrWhiteSpace(model.CategoryName)
                 || string.IsNullOrWhiteSpace(model.Icon))
             {
                 return Result.Failure(GlobalError.InvalidInputs);
             }
+            model.UserId = userId;
             _unitOfWork.categoryIncome.Update(_mapper.Map<CategoryIncome>(model));
             await _unitOfWork.Save();
             return Result.Success("Category updated successfully");

@@ -57,11 +57,13 @@ namespace SpendingTracker.Application.Services
 
         public async Task<Result> UpdateCategoryExpense(CategoryExpenseDto model, ClaimsPrincipal user)
         {
+            Guid userId = CheckUserId(user);
             if (string.IsNullOrWhiteSpace(model.Color) || string.IsNullOrWhiteSpace(model.CategoryName)
                 || string.IsNullOrWhiteSpace(model.Icon))
             {
                 return Result.Failure(GlobalError.InvalidInputs);
             }
+            model.UserId = userId;
             _unitOfWork.categoryExpense.Update(_mapper.Map<CategoryExpense>(model));
             await _unitOfWork.Save();
             return Result.Success("Category updated successfully");
