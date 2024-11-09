@@ -205,7 +205,7 @@ Tool that allows users to record their expenses and incomes by categories, and g
     - **Description** : Retrieve all expense.
     -  **Authentication**: Required.
       
-- **POST** `/income`
+- **POST** `/expense`
   - **Description**: Create a new expense.
   - **Authentication**: Required.
   - **Request Body**:
