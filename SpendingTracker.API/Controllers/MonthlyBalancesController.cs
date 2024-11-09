@@ -18,10 +18,10 @@ namespace SpendingTracker.API.Controllers
         {
             _monthlyBalancesService = monthlyBalancesService;
         }
-        [HttpGet("{accountId:guid}")]
-        public async Task<IActionResult> Get(Guid accountId)
+        [HttpGet("{accountId:guid},{year:int},{month:int}")]
+        public async Task<IActionResult> Get(Guid accountId, int year, int month)
         {
-            var response = await _monthlyBalancesService.GetMonthlyBalance(accountId, User);
+            var response = await _monthlyBalancesService.GetMonthlyBalance(accountId,year,month, User);
             if (response.IsFailure)
             {
                 return BadRequest(response);
