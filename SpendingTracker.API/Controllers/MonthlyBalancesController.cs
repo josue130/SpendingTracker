@@ -7,7 +7,7 @@ using SpendingTracker.Application.Services.IServices;
 
 namespace SpendingTracker.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/monthly-balances")]
     [ApiController]
     [Authorize]
     public class MonthlyBalancesController : ControllerBase

@@ -6,7 +6,7 @@ using SpendingTracker.Application.Services.IServices;
 
 namespace SpendingTracker.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/category-income")]
     [ApiController]
     [Authorize]
     public class CategoryIncomeController : ControllerBase
