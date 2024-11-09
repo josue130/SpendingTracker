@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Logging;
+﻿using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Microsoft.IdentityModel.Logging;
 using SpendingTracker.Application.Common.Interface;
 using SpendingTracker.Application.Common.Result;
 using SpendingTracker.Application.Errors;
@@ -20,7 +21,7 @@ namespace SpendingTracker.Application.Services
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<Result> AddMonthlyBalance(Guid accountId, double amount, DateTime date)
+        public async Task<Result> AddMonthlyBalance(Guid accountId ,double amount, DateTime date)
         {
             int year = date.Year;
             int month = date.Month;
@@ -41,17 +42,21 @@ namespace SpendingTracker.Application.Services
             return Result.Success();
         }
 
-        public async Task<Result> GetMonthlyBalance(Guid accountId, ClaimsPrincipal user)
+        public async Task<Result> GetMonthlyBalance(Guid accountId,int year, int month, ClaimsPrincipal user)
         {
             Guid userId = CheckUserId(user);
-            var access = await _unitOfWork.userAccounts.Get(ua => ua.AccountId == accountId && ua.UserId == userId);
+            var access = await _unitOfWork.userAccounts.
+                Get(ua => ua.AccountId == accountId 
+                && ua.UserId == userId);
 
             if (access == null)
             {
                 return Result.Failure(AccountsError.AccountNotFound);
             }
 
-            MonthlyBalances result = await _unitOfWork.monthlyBalances.Get(mb => mb.AccountId == accountId);
+            MonthlyBalances result = await _unitOfWork.monthlyBalances.
+                Get(mb => mb.AccountId == accountId
+                && mb.Year == year && mb.Month == month);
 
             if (result == null)
             {

@@ -11,7 +11,7 @@ namespace SpendingTracker.Application.Services.IServices
 {
     public interface IMonthlyBalancesService
     {
-        Task<Result> GetMonthlyBalance(Guid accountId, ClaimsPrincipal user);
+        Task<Result> GetMonthlyBalance(Guid accountId,int year, int month, ClaimsPrincipal user);
         Task<Result> AddMonthlyBalance(Guid accountId, double amount, DateTime date);
     }
 }
