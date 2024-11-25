@@ -8,8 +8,8 @@ using SpendingTracker.Application.Common.Interface;
 using SpendingTracker.Application.Services;
 using SpendingTracker.Application.Services.IServices;
 using SpendingTracker.Infrastructure.Authentication;
+using SpendingTracker.Infrastructure.CurrencyApi;
 using SpendingTracker.Infrastructure.Data;
-using System;
 using Workout.Infrastructure.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +32,7 @@ builder.Services.AddScoped<ICategoryExpenseService, CategoryExpenseService>();
 builder.Services.AddScoped<IIncomeService, IncomeService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<IMonthlyBalancesService, MonthlyBalancesService>();
+builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(option =>
