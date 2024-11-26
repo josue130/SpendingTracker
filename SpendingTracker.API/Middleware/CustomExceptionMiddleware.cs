@@ -29,12 +29,13 @@ namespace SpendingTracker.API.Middleware
         }
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            
+
             ExceptionResponse response = exception switch
             {
                 UnauthorizedAccessException => new ExceptionResponse(HttpStatusCode.Unauthorized, "Unauthorized."),
+                ArgumentException ex => new ExceptionResponse(HttpStatusCode.BadRequest, ex.Message),
                 _ => new ExceptionResponse(HttpStatusCode.InternalServerError, "An unexpected error occurred.")
-            };
+            }; ;
 
             context.Response.StatusCode = (int)response.StatusCode;
 
