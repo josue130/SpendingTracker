@@ -64,7 +64,8 @@ namespace SpendingTracker.Application.Services
                 return Result.Failure(GlobalError.InvalidInputs);
             }
             model.UserId = userId;
-            _unitOfWork.categoryExpense.Update(_mapper.Map<CategoryExpense>(model));
+            CategoryExpense categoryExpense = CategoryExpense.Update(model.Id,model.CategoryName,model.Color,model.Icon,model.UserId);
+            _unitOfWork.categoryExpense.Update(categoryExpense);
             await _unitOfWork.Save();
             return Result.Success("Category updated successfully");
         }

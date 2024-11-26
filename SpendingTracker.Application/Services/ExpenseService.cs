@@ -98,10 +98,11 @@ namespace SpendingTracker.Application.Services
             {
                 return Result.Failure(GlobalError.InvalidInputs);
             }
-            _unitOfWork.expense.Update(_mapper.Map<Expense>(model));
+            Expense expense = Expense.Update(model.Id,model.Description,model.Amount,model.Date,model.AccountId,model.CategoryId);
+            _unitOfWork.expense.Update(expense);
 
             //Update account amount
-            Expense expense = await _unitOfWork.expense.Get(ex => ex.Id == model.Id);
+            expense = await _unitOfWork.expense.Get(ex => ex.Id == model.Id);
             double diff = expense.Amount - model.Amount;
             Accounts accounts = await _unitOfWork.accounts.Get(a => a.Id == model.AccountId);
             accounts.Amount += diff;

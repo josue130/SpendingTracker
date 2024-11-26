@@ -77,7 +77,8 @@ namespace SpendingTracker.Application.Services
                 return Result.Failure(GlobalError.InvalidInputs);
             }
 
-            _unitOfWork.accounts.Update(_mapper.Map<Accounts>(model));
+            Accounts account = Accounts.Update(model.Id,model.AccountName,model.Amount,model.Description);
+            _unitOfWork.accounts.Update(account);
             await _unitOfWork.Save();
            
             return Result.Success("Account updated successfully.");

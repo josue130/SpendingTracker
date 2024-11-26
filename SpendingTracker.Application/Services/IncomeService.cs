@@ -103,11 +103,12 @@ namespace SpendingTracker.Application.Services
             {
                 return Result.Failure(GlobalError.InvalidInputs);
             }
-            _unitOfWork.income.Update(_mapper.Map<Income>(model));
+            Income income = Income.Update(model.Id,model.Description,model.Amount,model.Date,model.AccountId,model.CategoryId);
+            _unitOfWork.income.Update(income);
 
 
             //Update account amount
-            Income income = await _unitOfWork.income.Get(a => a.Id == model.Id);
+            income = await _unitOfWork.income.Get(a => a.Id == model.Id);
             double diff = model.Amount - income.Amount;
             Accounts account = await _unitOfWork.accounts.Get(a => a.Id == model.AccountId);
             account.Amount += diff;
