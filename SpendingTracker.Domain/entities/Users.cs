@@ -26,6 +26,15 @@ namespace SpendingTracker.Domain.Entities
 
         public static Users Create(string fullName, string userName, string email, string password)
         {
+            if (string.IsNullOrWhiteSpace(fullName))
+                throw new ArgumentException("Full name is required.", nameof(fullName));
+            if (string.IsNullOrWhiteSpace(userName))
+                throw new ArgumentException("User name is required.", nameof(userName));
+            if (string.IsNullOrWhiteSpace(email) || ValueObjects.Email.Create(email) is null)
+                throw new ArgumentException("Invalid email format.", nameof(email));
+            if (string.IsNullOrWhiteSpace(password))
+                throw new ArgumentException("Password is required.", nameof(password));
+
             Guid id = Guid.NewGuid();
             
             return new Users(id, fullName, userName, email, password);

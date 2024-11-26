@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SpendingTracker.Domain.Entities
 {
@@ -33,16 +35,24 @@ namespace SpendingTracker.Domain.Entities
 
         public static Income Create(string description, double amount, DateTime date, Guid accountId, Guid categoryId)
         {
-            return new Income
-            {
-                Id = Guid.NewGuid(),
-                Description = description,
-                Amount = amount,
-                Date = date,
-                AccountId = accountId,
-                CategoryId = categoryId
-            };
+            Validate(amount, date, accountId, categoryId);
+            return new Income(Guid.NewGuid(), description, amount, date, accountId, categoryId);
         }
+
+        public static Income Update(Guid incomeId,string description, double amount, DateTime date, Guid accountId, Guid categoryId)
+        {
+            if (incomeId == Guid.Empty) throw new ArgumentException("IncomeId is required", nameof(incomeId));
+            Validate( amount,date,accountId,categoryId);
+            return new Income (incomeId,description,amount,date,accountId,categoryId);
+        }
+        private static void Validate(double amount, DateTime date, Guid accountId, Guid categoryId)
+        {
+            if (categoryId == Guid.Empty) throw new ArgumentException("categoryId is required", nameof(categoryId));
+            if (accountId == Guid.Empty) throw new ArgumentException("accountId is required", nameof(accountId));
+            if (date == default) throw new ArgumentException("Date can't be null or default.", nameof(date));
+            if (amount < 0) throw new ArgumentException("amount must be greater than 0.", nameof(amount));
+        }
+
         private Income()
         {
             

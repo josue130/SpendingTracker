@@ -32,15 +32,24 @@ namespace SpendingTracker.Domain.Entities
 
         public static Expense Create(string description, double amount, DateTime date, Guid accountId, Guid categoryId)
         {
-            return new Expense
-            {
-                Id = Guid.NewGuid(),
-                Description = description,
-                Amount = amount,
-                Date = date,
-                AccountId = accountId,
-                CategoryId = categoryId
-            };
+            Validate(amount, date, accountId, categoryId);
+            return new Expense(Guid.NewGuid(), description, amount, date, accountId, categoryId);
+        }
+
+
+        public static Expense Update(Guid expenseId, string description, double amount, DateTime date, Guid accountId, Guid categoryId)
+        {
+            if (expenseId == Guid.Empty) throw new ArgumentException("ExpenseId is required", nameof(expenseId));
+            Validate(amount, date, accountId, categoryId);
+            return new Expense (expenseId,description,amount,date,accountId,categoryId);
+        }
+
+        private static void Validate( double amount, DateTime date, Guid accountId, Guid categoryId)
+        {
+            if (categoryId == Guid.Empty) throw new ArgumentException("categoryId is required", nameof(categoryId));
+            if (accountId == Guid.Empty) throw new ArgumentException("accountId is required", nameof(accountId));
+            if (date == default) throw new ArgumentException("Date can't be null or default.", nameof(date));
+            if (amount < 0) throw new ArgumentException("amount must be greater than 0.", nameof(amount));
         }
         private Expense()
         {

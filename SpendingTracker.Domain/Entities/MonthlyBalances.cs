@@ -27,14 +27,20 @@ namespace SpendingTracker.Domain.Entities
         }
         public static MonthlyBalances Create(int year, int month, double balance, Guid accountId)
         {
-            return new MonthlyBalances
-            {
-                Id = Guid.NewGuid(),
-                Year = year,
-                Month = month,
-                Balance = balance,
-                AccountId = accountId
-            };
+            Validate(year, month, accountId);
+            return new MonthlyBalances(Guid.NewGuid(), year, month, balance, accountId);
+        }
+        public static MonthlyBalances Update(Guid MonthlyBalanceId, int year, int month, double balance, Guid accountId)
+        {
+            if (MonthlyBalanceId == Guid.Empty) throw new ArgumentException("MonthlyBalanceId is required", nameof(MonthlyBalanceId));
+            Validate(year, month, accountId);
+            return new MonthlyBalances(MonthlyBalanceId,year,month,balance,accountId);
+        }
+        private static void Validate(int year, int month, Guid accountId)
+        {
+            if (accountId == Guid.Empty) throw new ArgumentException("accountId is required", nameof(accountId));
+            if (year < 1900 || year > 2100) throw new ArgumentException("Invalid year", nameof(year));
+            if (month < 1 || month > 12) throw new ArgumentException("Invalid month", nameof(month));
         }
         private MonthlyBalances()
         {
