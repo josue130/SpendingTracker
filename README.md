@@ -1,13 +1,39 @@
-# SpendingTracker API Documentation / Front-End(Working on it)
+# SpendingTracker API Documentation
 
 ## Project Description
-Tool that allows users to record their expenses and incomes by categories, and get monthly balances.
+A financial tracking tool that allows users to record their expenses and incomes by categories, and get monthly balances.
+
+
+## Why Clean Architecture?
+This project implements Clean Architecture to ensure a clear and modular structure in the code, enhancing scalability and maintainability. The architecture divides the application into independent layers such as Domain, Application, and Infrastructure each with specific responsibilities:
+
+- Separation of Concerns: By keeping responsibilities isolated within each layer, Clean Architecture makes the code easier to read, maintain and understand.
+  
+- Flexibility and Scalability: It allows components (such as databases, authentication providers, etc.) to be changed or enhanced without affecting the core business logic.
+
+- Testability: The architecture enables the business logic layers to remain isolated from infrastructure, making unit and integration testing easier and contributing to a more robust, error resistant software.
+
+- Independence from Infrastructure: Clean Architecture ensures that business logic is not dependent on specific implementation details. For instance, if the database system or authentication provider changes the impact on business logic is minimized.
+
+## Why Result Pattern?
+In this project, the Result Pattern is implemented to handle the flow of operations and manage errors effectively. This approach has several benefits:
+
+- Clear Success/Failure Handling: It helps distinguish between successful and failed operations explicitly, reducing ambiguity in the flow of logic.
+
+- Standardized Error Reporting: By using a unified pattern for result handling, the project ensures consistent error messages and status codes, making it easier to maintain and debug.
+  
+- Improved Testability: It simplifies unit testing by providing a clear path for checking success and failure scenarios, which contributes to more reliable software.
+
+## Why redis?
+Redis is used in this project to store freecurrencyapi data, with this information in redis the application reduces the number of external API calls, improving performance and minimizing latency.
 
 ## Prerequisites
 - .NET 8
 - ASP.NET Core
 - Entity Framework Core
 - SQL Server
+- [Redis account](https://redis.io/es/)
+- [freecurrencyapi account](https://freecurrencyapi.com/)
 
 ## How to Run
 1. Clone the repository.
@@ -247,4 +273,11 @@ Tool that allows users to record their expenses and incomes by categories, and g
 - **GET** `/monthly-balances/{accountId},{year},{month}`
     - **Description** : Retrieve all monthly balances.
     -  **Authentication**: Required.
-      
+### Currency
+- **GET** `/currency/currencies`
+    - **Description** : Returns all our supported currencies.
+    -  **Authentication**: Required.
+- **GET** `/currency/latest?baseCurrency=USD&currencies=IDR`
+    - **Description** : Returns the latest exchange rates.
+    -  **Authentication**: Required.
+    -  **More information**: https://www.nuget.org/packages/freecurrencyapi/  
