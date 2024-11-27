@@ -17,9 +17,12 @@ namespace SpendingTracker.Application.Services
     public class MonthlyBalancesService : IMonthlyBalancesService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public MonthlyBalancesService(IUnitOfWork unitOfWork)
+        private readonly IAuthService _authService;
+        public MonthlyBalancesService(IUnitOfWork unitOfWork, IAuthService authService)
         {
             _unitOfWork = unitOfWork;
+            _authService = authService;
+
         }
         public async Task<Result> AddMonthlyBalance(Guid accountId ,double amount, DateTime date)
         {
@@ -44,10 +47,14 @@ namespace SpendingTracker.Application.Services
 
         public async Task<Result> GetMonthlyBalance(Guid accountId,int year, int month, ClaimsPrincipal user)
         {
-            Guid userId = CheckUserId(user);
+            Result<Guid> getUserId = CheckUserId(user);
+            if (getUserId.IsFailure)
+            {
+                return Result.Failure<Guid>(getUserId.Error);
+            }
             var access = await _unitOfWork.userAccounts.
                 Get(ua => ua.AccountId == accountId 
-                && ua.UserId == userId);
+                && ua.UserId == getUserId.Value);
 
             if (access == null)
             {
@@ -64,15 +71,14 @@ namespace SpendingTracker.Application.Services
             }
             return Result.Success(result.Balance);
         }
-        private Guid CheckUserId(ClaimsPrincipal user)
+        private Result<Guid> CheckUserId(ClaimsPrincipal user)
         {
-            var userId = user.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId))
+            Result<Guid> userId = _authService.CheckUserId(user);
+            if (userId.IsFailure)
             {
-                //Error or exeception
-                throw new UnauthorizedAccessException();
+                return Result.Failure<Guid>(userId.Error);
             }
-            return Guid.Parse(userId);
+            return Result.Success(userId.Value);
         }
 
     }

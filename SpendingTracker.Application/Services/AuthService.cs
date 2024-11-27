@@ -6,6 +6,7 @@ using SpendingTracker.Application.Errors;
 using SpendingTracker.Application.Services.IServices;
 using SpendingTracker.Domain.Entities;
 using SpendingTracker.Domain.ValueObjects;
+using System.Security.Claims;
 
 
 namespace SpendingTracker.Application.Services
@@ -21,6 +22,16 @@ namespace SpendingTracker.Application.Services
             _unitOfWork = unitOfWork;
             _passwordHasher = new PasswordHasher<UserDto>();
             _jwtTokenGenerator = jwtTokenGenerator;
+        }
+
+        public Result<Guid> CheckUserId(ClaimsPrincipal user)
+        {
+            var userIdString = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out Guid userId))
+            {
+                return Result.Failure<Guid>(JWTError.JwtTokenInvalid);
+            }
+            return Result.Success(userId);
         }
 
         public async Task<Result> Login(LoginRequestDto loginRequest)

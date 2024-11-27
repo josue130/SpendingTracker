@@ -11,7 +11,7 @@ namespace SpendingTracker.Application.Services.IServices
 {
     public interface IExpenseService
     {
-        Task<Result> GetExpense(Guid accountId, int month, int year);
+        Task<Result> GetExpense(Guid accountId, int month, int year, ClaimsPrincipal user);
         Task<Result> AddExpense(ExpenseDto model, ClaimsPrincipal user);
         Task<Result> UpdateExpense(ExpenseDto model, ClaimsPrincipal user);
         Task<Result> DeleteExpense(Guid Id, ClaimsPrincipal user);

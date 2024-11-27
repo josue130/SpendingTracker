@@ -16,15 +16,17 @@ namespace SpendingTracker.Application.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMonthlyBalancesService _monthlyBalancesService;
         private readonly IMapper _mapper;
-        public ExpenseService(IUnitOfWork unitOfWork, IMapper mapper, IMonthlyBalancesService monthlyBalancesService)
+        private readonly IAuthService _authService;
+        public ExpenseService(IUnitOfWork unitOfWork, IMapper mapper, IMonthlyBalancesService monthlyBalancesService, IAuthService authService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _monthlyBalancesService = monthlyBalancesService;
-
+            _authService = authService;
         }
         public async Task<Result> AddExpense(ExpenseDto model, ClaimsPrincipal user)
         {
+       
             if (model.CategoryId == Guid.Empty
                     || model.AccountId == Guid.Empty || model.Date == default)
             {
@@ -34,6 +36,12 @@ namespace SpendingTracker.Application.Services
             {
                 return Result.Failure(GlobalError.InvalidInputs);
             }
+            var accessResult = await ValidateAccountAccess(user, model.AccountId);
+            if (accessResult.IsFailure)
+            {
+                return Result.Failure(accessResult.Error);
+            }
+
             Expense expense = Expense.Create(model.Description, model.Amount, model.Date, model.AccountId, model.CategoryId);
             await _unitOfWork.expense.Add(expense);
 
@@ -52,11 +60,10 @@ namespace SpendingTracker.Application.Services
 
         public async Task<Result> DeleteExpense(Guid Id, ClaimsPrincipal user)
         {
-            Guid userId = CheckUserId(user);
-            bool result = await _unitOfWork.expense.CheckUserAccess(Id, userId);
-            if (!result)
+            var result = await ValidateExpenseAccess(user, Id);
+            if (result.IsFailure)
             {
-                return Result.Failure(ExpenseError.ExpenseNotFound);
+                return Result.Failure(result.Error);
             }
 
             Expense expense = await _unitOfWork.expense.Get(i => i.Id == Id);
@@ -74,19 +81,23 @@ namespace SpendingTracker.Application.Services
             return Result.Success();
         }
 
-        public async Task<Result> GetExpense(Guid accountId, int month, int year)
+        public async Task<Result> GetExpense(Guid accountId, int month, int year, ClaimsPrincipal user)
         {
+            var accessResult = await ValidateAccountAccess(user, accountId);
+            if (accessResult.IsFailure)
+            {
+                return Result.Failure(accessResult.Error);
+            }
             IEnumerable<Expense> response = await _unitOfWork.expense.GetExpenseByAccountId(accountId, month, year);
             return Result.Success(_mapper.Map<IEnumerable<ExpenseDto>>(response));
         }
 
         public async Task<Result> UpdateExpense(ExpenseDto model, ClaimsPrincipal user)
         {
-            Guid userId = CheckUserId(user);
-            bool result = await _unitOfWork.expense.CheckUserAccess(model.Id, userId);
-            if (!result)
+            var result = await ValidateExpenseAccess(user,model.Id);
+            if (result.IsFailure)
             {
-                return Result.Failure(ExpenseError.ExpenseNotFound);
+                return Result.Failure(result.Error);
             }
 
             if (model.CategoryId == Guid.Empty
@@ -115,15 +126,37 @@ namespace SpendingTracker.Application.Services
             return Result.Success();
         }
 
-        private Guid CheckUserId(ClaimsPrincipal user)
+
+        private async Task<Result> ValidateAccountAccess(ClaimsPrincipal user, Guid accountId) 
         {
-            var userId = user.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId))
+            Result<Guid> userId = _authService.CheckUserId(user);
+            if (userId.IsFailure)
             {
-                //Error or exeception
-                throw new UnauthorizedAccessException();
+                return Result.Failure(userId.Error);
             }
-            return Guid.Parse(userId);
+            UserAccounts userAccounts = await _unitOfWork.userAccounts.Get(ua => ua.UserId == userId.Value
+                && ua.AccountId == accountId);
+
+            if (userAccounts == null) 
+            {
+                return Result.Failure(AccountsError.AccountNotFound);
+            }
+            return Result.Success();
+        }
+
+        private async Task<Result> ValidateExpenseAccess(ClaimsPrincipal user,Guid expenseId) 
+        {
+            Result<Guid> userId = _authService.CheckUserId(user);
+            if (userId.IsFailure)
+            {
+                return Result.Failure(userId.Error);
+            }
+            bool result = await _unitOfWork.expense.CheckUserAccess(expenseId, userId.Value);
+            if (!result)
+            {
+                return Result.Failure(ExpenseError.ExpenseNotFound);
+            }
+            return Result.Success();
         }
     }
 }

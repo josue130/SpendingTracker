@@ -20,7 +20,7 @@ namespace SpendingTracker.API.Controllers
         [HttpGet("{accountId:guid},{year:int},{month:int}")]
         public async Task<IActionResult> Get(Guid accountId,  int year, int month)
         {
-            var response = await _incomeService.GetIncome(accountId,month,year);
+            var response = await _incomeService.GetIncome(accountId,month,year,User);
             if (response.IsFailure)
             {
                 return BadRequest(response);

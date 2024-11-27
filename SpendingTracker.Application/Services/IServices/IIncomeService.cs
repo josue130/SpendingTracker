@@ -11,7 +11,7 @@ namespace SpendingTracker.Application.Services.IServices
 {
     public interface IIncomeService
     {
-        Task<Result> GetIncome(Guid accountId, int month, int year);
+        Task<Result> GetIncome(Guid accountId, int month, int year, ClaimsPrincipal user);
         Task<Result> AddIncome(IncomeDto model, ClaimsPrincipal user);
         Task<Result> UpdateIncome(IncomeDto model, ClaimsPrincipal user);
         Task<Result> DeleteIncome(Guid Id, ClaimsPrincipal user);

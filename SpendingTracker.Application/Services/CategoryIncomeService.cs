@@ -8,6 +8,7 @@ using SpendingTracker.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,20 +19,27 @@ namespace SpendingTracker.Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public CategoryIncomeService(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly IAuthService _authService;
+        public CategoryIncomeService(IUnitOfWork unitOfWork, IMapper mapper,IAuthService authService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _authService = authService;
         }
         public async Task<Result> CreateCategoryIncome(CategoryIncomeDto model, ClaimsPrincipal user)
         {
+            Result<Guid> result = CheckUserId(user);
+            if (result.IsFailure)
+            {
+                return Result.Failure<Guid>(result.Error);
+            }
             if (string.IsNullOrWhiteSpace(model.Color) || string.IsNullOrWhiteSpace(model.CategoryName)
                 || string.IsNullOrWhiteSpace(model.Icon))
             {
                 return Result.Failure(GlobalError.InvalidInputs);
             }
-            Guid userId = CheckUserId(user);
-            CategoryIncome categoryIncome = CategoryIncome.Create(model.CategoryName, model.Color, model.Icon,userId );
+         
+            CategoryIncome categoryIncome = CategoryIncome.Create(model.CategoryName, model.Color, model.Icon,result.Value );
             await _unitOfWork.categoryIncome.Add(categoryIncome);
             await _unitOfWork.Save();
             return Result.Success("Category created successfully");
@@ -39,9 +47,7 @@ namespace SpendingTracker.Application.Services
 
         public async Task<Result> DeleteCategoryIncome(Guid id, ClaimsPrincipal user)
         {
-            Guid userId = CheckUserId(user);
-            Result result = await CheckUserAccess(id, userId);
-
+            Result<Guid> result = await CheckUserAccess(id, user);
             if (result.IsFailure)
             {
                 return Result.Failure(result.Error);
@@ -54,20 +60,28 @@ namespace SpendingTracker.Application.Services
 
         public async Task<Result> GetCategories(ClaimsPrincipal user)
         {
-            Guid userId = CheckUserId(user);
-            IEnumerable<CategoryIncome> response = await _unitOfWork.categoryIncome.GetCategories(userId);
+            Result<Guid> result = CheckUserId(user);
+            if (result.IsFailure)
+            {
+                return Result.Failure<Guid>(result.Error);
+            }
+            IEnumerable<CategoryIncome> response = await _unitOfWork.categoryIncome.GetCategories(result.Value);
             return Result.Success(_mapper.Map<IEnumerable<CategoryIncomeDto>>(response));
         }
 
         public async Task<Result> UpdateCategoryIncome(CategoryIncomeDto model, ClaimsPrincipal user)
         {
-            Guid userId = CheckUserId(user);
+            Result<Guid> result = await CheckUserAccess(model.Id, user);
+            if (result.IsFailure)
+            {
+                return Result.Failure(result.Error);
+            }
             if (string.IsNullOrWhiteSpace(model.Color) || string.IsNullOrWhiteSpace(model.CategoryName)
                 || string.IsNullOrWhiteSpace(model.Icon))
             {
                 return Result.Failure(GlobalError.InvalidInputs);
             }
-            model.UserId = userId;
+            model.UserId = result.Value;
             CategoryIncome categoryIncome = CategoryIncome.Update(model.Id,model.CategoryName,model.Color,model.Icon,model.UserId);
             _unitOfWork.categoryIncome.Update(_mapper.Map<CategoryIncome>(model));
             await _unitOfWork.Save();
@@ -75,26 +89,30 @@ namespace SpendingTracker.Application.Services
         }
 
 
-        private async Task<Result> CheckUserAccess(Guid id, Guid userId)
+        private async Task<Result<Guid>> CheckUserAccess(Guid id, ClaimsPrincipal user)
         {
-            CategoryIncome response = await _unitOfWork.categoryIncome.Get(ua => ua.Id == id && ua.UserId == userId);
+            Result<Guid> userId = CheckUserId(user);
+            if (userId.IsFailure)
+            {
+                return Result.Failure<Guid>(userId.Error);
+            }
+            CategoryIncome response = await _unitOfWork.categoryIncome.Get(ua => ua.Id == id && ua.UserId == userId.Value);
 
             if (response == null)
             {
-                return Result.Failure(CategoryIncomeError.CategorytNotFound);
+                return Result.Failure<Guid>(CategoryExpenseError.CategoryNotFound);
             }
-            return Result.Success(response);
+            return Result.Success(userId.Value);
         }
 
-        private Guid CheckUserId(ClaimsPrincipal user)
+        private Result<Guid> CheckUserId(ClaimsPrincipal user)
         {
-            var userId = user.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId))
+            Result<Guid> userId = _authService.CheckUserId(user);
+            if (userId.IsFailure)
             {
-                //Error or exeception
-                throw new UnauthorizedAccessException();
+                return Result.Failure<Guid>(userId.Error);
             }
-            return Guid.Parse(userId);
+            return Result.Success(userId.Value);
         }
     }
 }

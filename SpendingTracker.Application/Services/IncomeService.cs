@@ -19,13 +19,16 @@ namespace SpendingTracker.Application.Services
     public class IncomeService : IIncomeService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IAuthService _authService;
         private readonly IMonthlyBalancesService _monthlyBalancesService;
         private readonly IMapper _mapper;
-        public IncomeService(IUnitOfWork unitOfWork, IMapper mapper, IMonthlyBalancesService monthlyBalancesService)
+        public IncomeService(IUnitOfWork unitOfWork, IMapper mapper, IMonthlyBalancesService monthlyBalancesService, IAuthService authService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _monthlyBalancesService = monthlyBalancesService;
+            _authService = authService;
+
         }
         public async Task<Result> AddIncome(IncomeDto model, ClaimsPrincipal user)
         {
@@ -39,6 +42,13 @@ namespace SpendingTracker.Application.Services
             {
                 return Result.Failure(GlobalError.InvalidInputs);
             }
+
+            var accessResult = await ValidateAccountAccess(user, model.AccountId);
+            if (accessResult.IsFailure)
+            {
+                return Result.Failure(accessResult.Error);
+            }
+
             Income income = Income.Create(model.Description, model.Amount, model.Date, model.AccountId, model.CategoryId);
             await _unitOfWork.income.Add(income);
 
@@ -56,11 +66,10 @@ namespace SpendingTracker.Application.Services
 
         public async Task<Result> DeleteIncome(Guid Id, ClaimsPrincipal user)
         {
-            Guid userId = CheckUserId(user);
-            bool result = await _unitOfWork.income.CheckUserAccess(Id, userId);
-            if (!result)
+            var result = await ValidateIncomeAccess(user, Id);
+            if (result.IsFailure)
             {
-                return Result.Failure(IncomeError.IncomeNotFound);
+                return Result.Failure(result.Error);
             }
 
             Income income = await _unitOfWork.income.Get(i => i.Id == Id);
@@ -79,20 +88,25 @@ namespace SpendingTracker.Application.Services
 
         }
 
-        public async Task<Result> GetIncome(Guid accountId, int month, int year)
+        public async Task<Result> GetIncome(Guid accountId, int month, int year, ClaimsPrincipal user)
         {
+            var accessResult = await ValidateAccountAccess(user, accountId);
+            if (accessResult.IsFailure)
+            {
+                return Result.Failure(accessResult.Error);
+            }
             IEnumerable<Income> response = await _unitOfWork.income.GetIncomesByAccountId(accountId,month,year);
             return Result.Success(_mapper.Map<IEnumerable<IncomeDto>>(response));
         }
 
         public async Task<Result> UpdateIncome(IncomeDto model, ClaimsPrincipal user)
         {
-            Guid userId = CheckUserId(user);
-            bool result = await _unitOfWork.income.CheckUserAccess(model.Id, userId);
-            if (!result)
+            var result = await ValidateIncomeAccess(user, model.Id);
+            if (result.IsFailure)
             {
-                return Result.Failure(IncomeError.IncomeNotFound);
+                return Result.Failure(result.Error);
             }
+
 
             if (model.CategoryId == Guid.Empty
                     || model.AccountId == Guid.Empty || model.Date == default)
@@ -121,15 +135,36 @@ namespace SpendingTracker.Application.Services
             return Result.Success();
 
         }
-        private Guid CheckUserId(ClaimsPrincipal user)
+        private async Task<Result> ValidateAccountAccess(ClaimsPrincipal user, Guid accountId)
         {
-            var userId = user.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId))
+            Result<Guid> userId = _authService.CheckUserId(user);
+            if (userId.IsFailure)
             {
-                //Error or exeception
-                throw new UnauthorizedAccessException();
+                return Result.Failure(userId.Error);
             }
-            return Guid.Parse(userId);
+            UserAccounts userAccounts = await _unitOfWork.userAccounts.Get(ua => ua.UserId == userId.Value
+                && ua.AccountId == accountId);
+
+            if (userAccounts == null)
+            {
+                return Result.Failure(AccountsError.AccountNotFound);
+            }
+            return Result.Success();
+        }
+
+        private async Task<Result> ValidateIncomeAccess(ClaimsPrincipal user, Guid expenseId)
+        {
+            Result<Guid> userId = _authService.CheckUserId(user);
+            if (userId.IsFailure)
+            {
+                return Result.Failure(userId.Error);
+            }
+            bool result = await _unitOfWork.income.CheckUserAccess(expenseId, userId.Value);
+            if (!result)
+            {
+                return Result.Failure(IncomeError.IncomeNotFound);
+            }
+            return Result.Success();
         }
     }
 }

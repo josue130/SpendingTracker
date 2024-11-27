@@ -14,15 +14,21 @@ namespace SpendingTracker.Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public AccountService(IUnitOfWork unitOfWork,IMapper mapper)
+        private readonly IAuthService _authService;
+        public AccountService(IUnitOfWork unitOfWork,IMapper mapper, IAuthService authService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _authService = authService;
         }
 
         public  async Task<Result> CreatAccount(AccountsDto model, ClaimsPrincipal user)
         {
-            Guid userId = CheckUserId(user);
+            Result<Guid> result = CheckUserId(user);
+            if (result.IsFailure)
+            {
+                return Result.Failure<Guid>(result.Error);
+            }
             if (string.IsNullOrWhiteSpace(model.Description) || string.IsNullOrWhiteSpace(model.AccountName))
             {
                 return Result.Failure(GlobalError.InvalidInputs);
@@ -33,7 +39,7 @@ namespace SpendingTracker.Application.Services
             }
             Accounts account = Accounts.Create(model.AccountName,model.Amount,model.Description);
             await _unitOfWork.accounts.Add(account);
-            var userAccount = new UserAccounts() { Id = Guid.NewGuid(), AccountId = account.Id, UserId = userId };
+            var userAccount = new UserAccounts() { Id = Guid.NewGuid(), AccountId = account.Id, UserId = result.Value };
             await _unitOfWork.userAccounts.Add(userAccount);
             await _unitOfWork.Save();
 
@@ -42,19 +48,21 @@ namespace SpendingTracker.Application.Services
 
         public async Task<Result>GetAccountbyUserId(ClaimsPrincipal user)
         {
-            Guid userId = CheckUserId(user);
-            var response = await _unitOfWork.userAccounts.GetUserAccounts(userId);
+            Result<Guid> result = CheckUserId(user);
+            if (result.IsFailure)
+            {
+                return Result.Failure<Guid>(result.Error);
+            }
+            var response = await _unitOfWork.userAccounts.GetUserAccounts(result.Value);
             return Result.Success(response);
         }
 
         public async Task<Result> RemoveAccount(Guid accountId, ClaimsPrincipal user)
         {
-            Guid userId = CheckUserId(user);
-            Result result = await CheckUserAccess(accountId, userId);
-
+            Result<Guid> result = await CheckUserAccess(accountId, user);
             if (result.IsFailure)
             {
-                return Result.Failure(AccountsError.AccountNotFound);
+                return Result.Failure(result.Error);
             }
             Accounts account = await _unitOfWork.accounts.Get(account => account.Id == accountId);
             _unitOfWork.accounts.Remove(account);
@@ -64,12 +72,10 @@ namespace SpendingTracker.Application.Services
 
         public async Task<Result> UpdateAccount(AccountsDto model, ClaimsPrincipal user)
         {
-            Guid userId = CheckUserId(user);
-            Result result = await CheckUserAccess(model.Id, userId);
-
+            Result<Guid> result = await CheckUserAccess(model.Id, user);
             if (result.IsFailure)
             {
-                return Result.Failure(AccountsError.AccountNotFound);
+                return Result.Failure(result.Error);
             }
 
             if (string.IsNullOrWhiteSpace(model.Description) || string.IsNullOrWhiteSpace(model.AccountName))
@@ -86,26 +92,30 @@ namespace SpendingTracker.Application.Services
         }
 
 
-        private async Task<Result> CheckUserAccess(Guid accountId, Guid userId)
+        private async Task<Result<Guid>> CheckUserAccess(Guid accountId,ClaimsPrincipal user)
         {
-            UserAccounts userAccount = await _unitOfWork.userAccounts.Get(ua => ua.AccountId == accountId && ua.UserId == userId);
+            Result<Guid> userId = CheckUserId(user);
+            if (userId.IsFailure)
+            {
+                return Result.Failure<Guid>(userId.Error);
+            }
+            UserAccounts userAccount = await _unitOfWork.userAccounts.Get(ua => ua.AccountId == accountId && ua.UserId == userId.Value);
 
             if (userAccount == null)
             {
-                return Result.Failure(AccountsError.AccountNotFound);
+                return Result.Failure<Guid>(AccountsError.AccountNotFound);
             }
-            return Result.Success();
+            return Result.Success(userId.Value);
         }
 
-        private Guid CheckUserId(ClaimsPrincipal user)
+        private Result<Guid> CheckUserId(ClaimsPrincipal user)
         {
-            var userId = user.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId))
+            Result<Guid> userId = _authService.CheckUserId(user);
+            if (userId.IsFailure)
             {
-                //Error or exeception
-                throw new UnauthorizedAccessException();
+                return Result.Failure<Guid>(userId.Error);
             }
-            return Guid.Parse(userId);
+            return Result.Success(userId.Value);
         }
     }
 }
