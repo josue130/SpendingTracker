@@ -11,5 +11,7 @@ namespace SpendingTracker.Application.Errors
     {
         public static readonly Error InvalidInputs = new Error(
             "Validation", "Inputs cannot be empty");
+        public static readonly Error InvalidAmount = new Error(
+            "Validation", "Amount must be greater than 0");
     }
 }

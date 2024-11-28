@@ -9,13 +9,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{5F67A503-C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{A12ED13C-0D67-45DB-B310-6C02CD98970B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpendingTracker.Domain", "SpendingTracker.Domain\SpendingTracker.Domain.csproj", "{7A4C9C9E-5B5F-4FB1-B83D-088D51D98F11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendingTracker.Domain", "SpendingTracker.Domain\SpendingTracker.Domain.csproj", "{7A4C9C9E-5B5F-4FB1-B83D-088D51D98F11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpendingTracker.Application", "SpendingTracker.Application\SpendingTracker.Application.csproj", "{9839CDB8-F2F4-4EC6-A1AF-EF9009A6353F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendingTracker.Application", "SpendingTracker.Application\SpendingTracker.Application.csproj", "{9839CDB8-F2F4-4EC6-A1AF-EF9009A6353F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpendingTracker.API", "SpendingTracker.API\SpendingTracker.API.csproj", "{CAA4DCD5-A32F-423E-A493-A1EE7BD47AB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendingTracker.API", "SpendingTracker.API\SpendingTracker.API.csproj", "{CAA4DCD5-A32F-423E-A493-A1EE7BD47AB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpendingTracker.Infrastructure", "SpendingTracker.Infrastructure\SpendingTracker.Infrastructure.csproj", "{6108906A-1EF1-46F8-AC9D-641CEBE63773}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendingTracker.Infrastructure", "SpendingTracker.Infrastructure\SpendingTracker.Infrastructure.csproj", "{6108906A-1EF1-46F8-AC9D-641CEBE63773}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{23F99536-2832-4EBA-9ADA-FEF32F96FA90}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{F50F4F7C-ECD5-4B15-A9A1-355FB1B9F152}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplicationUnitTests", "ApplicationUnitTests\ApplicationUnitTests.csproj", "{A21D27E7-1DEB-4BF0-B8E9-FAA10776DD19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +45,10 @@ Global
 		{6108906A-1EF1-46F8-AC9D-641CEBE63773}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6108906A-1EF1-46F8-AC9D-641CEBE63773}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6108906A-1EF1-46F8-AC9D-641CEBE63773}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A21D27E7-1DEB-4BF0-B8E9-FAA10776DD19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A21D27E7-1DEB-4BF0-B8E9-FAA10776DD19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A21D27E7-1DEB-4BF0-B8E9-FAA10776DD19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A21D27E7-1DEB-4BF0-B8E9-FAA10776DD19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,6 +60,8 @@ Global
 		{9839CDB8-F2F4-4EC6-A1AF-EF9009A6353F} = {5F67A503-C551-4B4A-9D09-8C2F8FC6CBEF}
 		{CAA4DCD5-A32F-423E-A493-A1EE7BD47AB0} = {A12ED13C-0D67-45DB-B310-6C02CD98970B}
 		{6108906A-1EF1-46F8-AC9D-641CEBE63773} = {A12ED13C-0D67-45DB-B310-6C02CD98970B}
+		{F50F4F7C-ECD5-4B15-A9A1-355FB1B9F152} = {23F99536-2832-4EBA-9ADA-FEF32F96FA90}
+		{A21D27E7-1DEB-4BF0-B8E9-FAA10776DD19} = {F50F4F7C-ECD5-4B15-A9A1-355FB1B9F152}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E2AF6975-09EA-4C6E-993A-C660900EF95E}

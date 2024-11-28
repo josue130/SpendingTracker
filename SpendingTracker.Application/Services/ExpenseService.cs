@@ -34,7 +34,7 @@ namespace SpendingTracker.Application.Services
             }
             if (model.Amount < 0)
             {
-                return Result.Failure(GlobalError.InvalidInputs);
+                return Result.Failure(GlobalError.InvalidAmount);
             }
             var accessResult = await ValidateAccountAccess(user, model.AccountId);
             if (accessResult.IsFailure)
@@ -107,7 +107,7 @@ namespace SpendingTracker.Application.Services
             }
             if (model.Amount < 0)
             {
-                return Result.Failure(GlobalError.InvalidInputs);
+                return Result.Failure(GlobalError.InvalidAmount);
             }
             Expense expense = Expense.Update(model.Id,model.Description,model.Amount,model.Date,model.AccountId,model.CategoryId);
             _unitOfWork.expense.Update(expense);

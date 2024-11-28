@@ -40,7 +40,7 @@ namespace SpendingTracker.Application.Services
             }
             if (model.Amount < 0)
             {
-                return Result.Failure(GlobalError.InvalidInputs);
+                return Result.Failure(GlobalError.InvalidAmount);
             }
 
             var accessResult = await ValidateAccountAccess(user, model.AccountId);
@@ -115,7 +115,7 @@ namespace SpendingTracker.Application.Services
             }
             if (model.Amount < 0)
             {
-                return Result.Failure(GlobalError.InvalidInputs);
+                return Result.Failure(GlobalError.InvalidAmount);
             }
             Income income = Income.Update(model.Id,model.Description,model.Amount,model.Date,model.AccountId,model.CategoryId);
             _unitOfWork.income.Update(income);

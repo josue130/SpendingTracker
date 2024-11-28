@@ -82,6 +82,10 @@ namespace SpendingTracker.Application.Services
             {
                 return Result.Failure(GlobalError.InvalidInputs);
             }
+            if (model.Amount <= 0)
+            {
+                return Result.Failure(AccountsError.InvalidAmount);
+            }
 
             Accounts account = Accounts.Update(model.Id,model.AccountName,model.Amount,model.Description);
             _unitOfWork.accounts.Update(account);
