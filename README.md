@@ -24,8 +24,10 @@ In this project, the Result Pattern is implemented to handle the flow of operati
   
 - Improved Testability: It simplifies unit testing by providing a clear path for checking success and failure scenarios, which contributes to more reliable software.
 
-## Why redis?
-Redis is used in this project to store freecurrencyapi data, with this information in redis the application reduces the number of external API calls, improving performance and minimizing latency.
+## Cache
+Redis is implemented in this project to cache freecurrencyapi data, reducing external API calls, improving performance, and minimizing latency.
+
+**Note:** While a local in-memory cache would be sufficient for this small, single-server application, Redis was chosen specifically for learning and exploration purposes. This implementation showcases how to integrate Redis in a .NET application, though it may be overengineered for the current requirements.
 
 ## Prerequisites
 - .NET 8
