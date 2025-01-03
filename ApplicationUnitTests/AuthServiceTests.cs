@@ -163,7 +163,7 @@ namespace ApplicationUnitTests
 
             //Assert
             result.IsFailure.Should().BeTrue();
-            result.Error.Should().Be(AuthErrors.IncorrectPassword);
+            result.Error.Should().Be(AuthErrors.InvalidCredentials);
         }
         [Fact]
         public async Task LoginUser_WithInvalidUserName_ShouldReturnFailureResult()
@@ -180,7 +180,7 @@ namespace ApplicationUnitTests
 
             //Assert
             result.IsFailure.Should().BeTrue();
-            result.Error.Should().Be(AuthErrors.UserNameNotExist);
+            result.Error.Should().Be(AuthErrors.InvalidCredentials);
         }
     }
 }

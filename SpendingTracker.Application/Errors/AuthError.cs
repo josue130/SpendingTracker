@@ -18,7 +18,7 @@ namespace SpendingTracker.Application.Errors
         public static readonly Error UserNameNotExist = new Error(
             "Credentials", "The user does not exist");
 
-        public static readonly Error IncorrectPassword = new Error(
-            "Credentials", "Incorrect password");
+        public static readonly Error InvalidCredentials = new Error(
+            "Credentials", "Invalid Credentials");
     }
 }

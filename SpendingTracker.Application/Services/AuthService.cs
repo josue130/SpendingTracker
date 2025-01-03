@@ -41,7 +41,7 @@ namespace SpendingTracker.Application.Services
 
             if (user == null)
             {
-                return Result.Failure(AuthErrors.UserNameNotExist);
+                return Result.Failure(AuthErrors.InvalidCredentials);
             }
 
 
@@ -56,7 +56,7 @@ namespace SpendingTracker.Application.Services
 
             if (result != PasswordVerificationResult.Success)
             {
-                return Result.Failure(AuthErrors.IncorrectPassword);
+                return Result.Failure(AuthErrors.InvalidCredentials);
             }
 
 
